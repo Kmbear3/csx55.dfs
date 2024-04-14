@@ -3,9 +3,9 @@ package csx55.dfs.util;
 import java.io.IOException;
 import java.util.Scanner;
 
-import csx55.dfs.Discovery;
-import csx55.dfs.Peer;
-import csx55.dfs.wireformats.Deregister;
+//import csx55.dfs.Discovery;
+//import csx55.dfs.Peer;
+//import csx55.dfs.wireformats.Deregister;
 
 public class CLIHandler {
     private Scanner scan;
