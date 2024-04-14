@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 
-import csx55.chord.Discovery;
-import csx55.chord.node.Node;
-import csx55.chord.wireformats.Event;
-import csx55.chord.wireformats.EventFactory;
-import csx55.chord.wireformats.RegistrationRequest;
+import csx55.dfs.Discovery;
+import csx55.dfs.node.Node;
+import csx55.dfs.wireformats.Event;
+import csx55.dfs.wireformats.EventFactory;
+import csx55.dfs.wireformats.RegistrationRequest;
 
 public class TCPReceiverThread implements Runnable {
 

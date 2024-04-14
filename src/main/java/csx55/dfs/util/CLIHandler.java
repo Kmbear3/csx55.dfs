@@ -1,11 +1,11 @@
-package csx55.chord.util;
+package csx55.dfs.util;
 
 import java.io.IOException;
 import java.util.Scanner;
 
-import csx55.chord.Discovery;
-import csx55.chord.Peer;
-import csx55.chord.wireformats.Deregister;
+import csx55.dfs.Discovery;
+import csx55.dfs.Peer;
+import csx55.dfs.wireformats.Deregister;
 
 public class CLIHandler {
     private Scanner scan;
