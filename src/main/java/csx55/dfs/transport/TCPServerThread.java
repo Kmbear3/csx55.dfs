@@ -1,4 +1,4 @@
-package csx55.chord.transport;
+package csx55.dfs.transport;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import csx55.chord.node.Node;
+import csx55.dfs.node.Node;
 
 public class TCPServerThread implements Runnable{
     ServerSocket serverSocket;

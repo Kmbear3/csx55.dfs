@@ -6,4 +6,6 @@ public interface Event {
     //  [This is an interface with the getType() and getBytes() defined]
     public int getType();
     public byte[] getBytes() throws IOException;
+
+
 }
