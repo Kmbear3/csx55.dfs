@@ -1,15 +1,12 @@
-package csx55.chord.transport;
+package csx55.dfs.transport;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-
-import csx55.dfs.Discovery;
 import csx55.dfs.node.Node;
 import csx55.dfs.wireformats.Event;
 import csx55.dfs.wireformats.EventFactory;
-import csx55.dfs.wireformats.RegistrationRequest;
 
 public class TCPReceiverThread implements Runnable {
 
@@ -30,15 +27,12 @@ public class TCPReceiverThread implements Runnable {
 
         while (socket != null) {
             try {
-                
                 dataLength = din.readInt();
-
                 byte[] data = new byte[dataLength];
                 din.readFully(data, 0, dataLength);
 
                 Event event = EventFactory.getEvent(data);
                 this.node.onEvent(event, socket);
-                
 
             } catch (SocketException se) {
                 System.out.println(se.getMessage());
@@ -49,11 +43,6 @@ public class TCPReceiverThread implements Runnable {
             }
         }
         System.err.println("Socket Closed " + socketName);
-
-        if(this.node instanceof Discovery){
-            ((Discovery)this.node).closedConnection(socketName);
-        }
-        
     }
     
 }
