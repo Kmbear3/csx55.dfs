@@ -31,8 +31,8 @@ public class Controller implements Node{
     public void onEvent(Event event, Socket socket) {
         try {
             switch(event.getType()){
-                case Protocol.REGISTER_REQUEST:
-
+                case Protocol.HEART_BEAT:
+                    HeartBeat beat = new HeartBeat(event.getBytes());
                     break;
                 default:
                     System.out.println("Protocol Unmatched!");
@@ -41,7 +41,5 @@ public class Controller implements Node{
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 }
