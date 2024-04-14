@@ -15,6 +15,7 @@ public class Controller implements Node{
     // This information is built from heartbeats
     // Checks the liveness of the server
         // When it doesn't receive heartbeats
+
     public Controller(int port){
         System.out.println("Creating Controller, Listening for Connections. Port: " + port);
         this.port = port;

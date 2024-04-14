@@ -1,13 +1,22 @@
 package csx55.dfs.replication;
 
-public class ChunkServer {
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+import csx55.dfs.node.Node;
+import csx55.dfs.transport.TCPReceiverThread;
+import csx55.dfs.transport.TCPSender;
+import csx55.dfs.transport.TCPServerThread;
+import csx55.dfs.util.HeartBeatThread;
+import csx55.dfs.wireformats.Event;
+
+
+public class ChunkServer implements Node{
 
     // Stores chunks belonging to files on local disk
     // Checksums are adding to the files before they are written to disk
     // REads will also check checksums of the 8KB slices  --> then send chunk to the client
-
-
-    String STORAGE_PATH = "/tmp/chunk-server/";
 
 //    final private int TOTAL_SPACE_AVAILABLE = GB;
 //    int GB  = 10;
@@ -16,11 +25,50 @@ public class ChunkServer {
     // list of files with the chunks associated to the files
     // If corruption is detected during reads and writes the controller node is informed
 
-
-
-
+    String STORAGE_PATH = "/tmp/chunk-server/";
+    TCPSender registrySender;
+    private TCPServerThread server;
 
     public ChunkServer(String controllerIp, int controllerPort){
+        try {
+            Socket registrySocket = new Socket(controllerIp, controllerPort);
+            this.registrySender = new TCPSender(registrySocket);
+            TCPReceiverThread registryReceiver = new TCPReceiverThread(this, registrySocket);
+            Thread registryReceiverThread = new Thread(registryReceiver);
+            registryReceiverThread.start();
 
+            configureServer(this);
+            startHeartBeats();
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void configureServer(Node node){
+        this.server = new TCPServerThread(node);
+        Thread serverThread = new Thread(server);
+        serverThread.start();
+    }
+
+    public void startHeartBeats(){
+        HeartBeatThread heart = new HeartBeatThread(this);
+        Thread heartThread = new Thread(heart);
+        heartThread.start();
+    }
+
+    @Override
+    public void onEvent(Event event, Socket socket) {
+//        try {
+//            switch(event.getType()){
+//
+//
+//            }
+//        } catch (IOException e) {
+//            System.err.println("Error: MessagingNode.onEvent()");
+//            e.printStackTrace();
+//        }
     }
 }

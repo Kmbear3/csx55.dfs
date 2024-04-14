@@ -9,11 +9,19 @@ public class HeartBeatThread implements Runnable {
     // Info
         // space available
 
+    private ChunkServer cs;
     public HeartBeatThread(ChunkServer chunkServer){
+        this.cs = chunkServer;
+    }
+
+    private void sendBeat(){
 
     }
+
     @Override
     public void run() {
+        while(true){
 
+        }
     }
 }

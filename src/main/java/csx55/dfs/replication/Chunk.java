@@ -1,5 +1,8 @@
 package csx55.dfs.replication;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
 public class Chunk {
     // total size of chunk
     // Metadata
@@ -10,4 +13,11 @@ public class Chunk {
     // byte[] = 64KB
 
 
+    public void marshall(DataOutputStream dout){
+        
+    }
+
+    public void unmarshall(DataInputStream din){
+
+    }
 }
