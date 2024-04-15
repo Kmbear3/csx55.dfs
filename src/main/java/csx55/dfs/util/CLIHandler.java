@@ -2,6 +2,8 @@ package csx55.dfs.util;
 
 import csx55.dfs.replication.ChunkServer;
 import csx55.dfs.replication.Controller;
+import csx55.dfs.replication.Client;
+
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -14,7 +16,7 @@ public class CLIHandler {
     private Scanner scan;
     private Controller controller;
     private ChunkServer cs;
-//    private Client client;
+    private Client client;
 
 
     public CLIHandler(Controller controller){
@@ -25,6 +27,11 @@ public class CLIHandler {
     public CLIHandler(ChunkServer cs){
         this.scan = new Scanner(System.in);
         this.cs = cs;
+    }
+
+    public CLIHandler(Client client){
+        this.scan = new Scanner(System.in);
+        this.client = client;
     }
 
     public void readControllerInstructions(){
@@ -50,17 +57,18 @@ public class CLIHandler {
             case "exit":
         }
     }
-//
-//    private void sendDeregisterRequest(int status){
-//        try {
-//
-//            Deregister deregister = new Deregister(node.getMessagingNodeIP(), node.getMessagingNodePort(), status);
-//            node.sendRegistryMessage(deregister);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//}
+
+    public void readClientInstructions(){
+        String instruction = scan.nextLine(); // need parser
+        String[] result = instruction.split("\\s");
+
+        switch(result[0]) {
+            case "upload":
+                if(result.length != 3){
+                    System.err.println("incorrect number of arguments for upload");
+                }else{
+                    client.uploadFile(result[1], result[2]);
+                }
+        }
+    }
 }

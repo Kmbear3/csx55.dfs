@@ -67,7 +67,6 @@ public class HeartBeat implements Event{
         }
 
         dout.writeInt(this.freeSpace);
-
         dout.flush();
         marshalledBytes = baOutputStream.toByteArray();
         baOutputStream.close();
