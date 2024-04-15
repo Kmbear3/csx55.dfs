@@ -1,13 +1,13 @@
 package csx55.dfs.util;
 
+import csx55.dfs.replication.Chunk;
 import csx55.dfs.replication.ChunkServer;
+import csx55.dfs.wireformats.HeartBeat;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class HeartBeatThread implements Runnable {
-
-    // Major and minor heartbeats
-
-    // Info
-        // space available
 
     private ChunkServer cs;
     public HeartBeatThread(ChunkServer chunkServer){
@@ -15,13 +15,20 @@ public class HeartBeatThread implements Runnable {
     }
 
     private void sendBeat(){
-
+        try {
+            ArrayList<Chunk> chunks = cs.getChunks();
+            int freeSpace = cs.getFreeSpace();
+            HeartBeat beat = new HeartBeat(chunks, freeSpace);
+            cs.sendToRegistry(beat.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void run() {
         while(true){
-
+            sendBeat();
         }
     }
 }

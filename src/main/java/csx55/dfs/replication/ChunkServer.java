@@ -3,11 +3,13 @@ package csx55.dfs.replication;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import csx55.dfs.node.Node;
 import csx55.dfs.transport.TCPReceiverThread;
 import csx55.dfs.transport.TCPSender;
 import csx55.dfs.transport.TCPServerThread;
+import csx55.dfs.util.Constants;
 import csx55.dfs.util.HeartBeatThread;
 import csx55.dfs.wireformats.Event;
 
@@ -28,6 +30,9 @@ public class ChunkServer implements Node{
     String STORAGE_PATH = "/tmp/chunk-server/";
     TCPSender registrySender;
     private TCPServerThread server;
+    ArrayList<Chunk> chunks;
+    int totalSpace = 1 * Constants.GB;
+    int usedSpace = 0;
 
     public ChunkServer(String controllerIp, int controllerPort){
         try {
@@ -59,6 +64,14 @@ public class ChunkServer implements Node{
         heartThread.start();
     }
 
+    public ArrayList<Chunk> getChunks(){
+        return this.chunks;
+    }
+
+    public int getFreeSpace(){
+        return this.totalSpace - this.usedSpace;
+    }
+
     @Override
     public void onEvent(Event event, Socket socket) {
 //        try {
@@ -70,5 +83,8 @@ public class ChunkServer implements Node{
 //            System.err.println("Error: MessagingNode.onEvent()");
 //            e.printStackTrace();
 //        }
+    }
+
+    public void sendToRegistry(byte[] bytes) {
     }
 }
