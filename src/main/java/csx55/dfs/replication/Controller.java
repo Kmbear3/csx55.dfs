@@ -7,10 +7,13 @@ import csx55.dfs.transport.TCPServerThread;
 import csx55.dfs.wireformats.*;
 
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Controller implements Node {
 
     private final int port;
+    private ConcurrentHashMap<String, CSProxy> csProxies = new ConcurrentHashMap<>();
 
     // knows where the chunks are in the system
     // This information is built from heartbeats
@@ -35,8 +38,11 @@ public class Controller implements Node {
             switch(event.getType()){
                 case Protocol.HEART_BEAT:
                     HeartBeat beat = new HeartBeat(event.getBytes());
+                    handleHeartBeat(beat);
                     System.out.println("Received beat");
                     break;
+                case Protocol.UPLOAD_REQUEST:
+                    handleUploadRequest(socket);
                 default:
                     System.out.println("Protocol Unmatched!");
                     System.exit(0);
@@ -44,6 +50,20 @@ public class Controller implements Node {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void handleHeartBeat(HeartBeat beat) {
+        if(csProxies.contains(beat.getID())){
+            CSProxy csProxy = csProxies.get(beat.getID());
+            csProxy.update(beat);
+        }else{
+            CSProxy csProxy = new CSProxy(beat);
+            csProxies.put(beat.getID(), csProxy);
+        }
+    }
+
+    private void handleUploadRequest(Socket socket) {
+
     }
 
     public static void main(String[] args){

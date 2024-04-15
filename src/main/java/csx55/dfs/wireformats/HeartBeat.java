@@ -3,6 +3,7 @@ package csx55.dfs.wireformats;
 import java.io.IOException;
 import java.util.ArrayList;
 import csx55.dfs.replication.Chunk;
+import csx55.dfs.util.IpPort;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -18,6 +19,7 @@ public class HeartBeat implements Event{
     int numberOfChunks;
     int freeSpace;
     final int MESSAGE_TYPE = Protocol.HEART_BEAT;
+    IpPort myInfo;
 
     public HeartBeat(byte[] marshalledBytes) throws IOException{
         ByteArrayInputStream baInputStream =  new ByteArrayInputStream(marshalledBytes);
@@ -35,16 +37,21 @@ public class HeartBeat implements Event{
         }
 
         this.freeSpace = din.readInt();
+        String ip = WireHelper.unmarshallString(din);
+        int port = din.readInt();
+
+        this.myInfo = new IpPort(ip, port);
 
         baInputStream.close();
         din.close();
     }
 
     // Just doing major heartbeats for now
-    public HeartBeat(ArrayList<Chunk> chunks, int freeSpace){
+    public HeartBeat(ArrayList<Chunk> chunks, int freeSpace, IpPort myInfo){
         this.chunks = chunks;
         numberOfChunks = chunks.size();
         this.freeSpace = freeSpace;
+        this.myInfo = myInfo;
     }
 
     @Override
@@ -67,11 +74,19 @@ public class HeartBeat implements Event{
         }
 
         dout.writeInt(this.freeSpace);
+
+        WireHelper.marshallString(dout, myInfo.ip);
+        dout.writeInt(myInfo.port);
+
         dout.flush();
         marshalledBytes = baOutputStream.toByteArray();
         baOutputStream.close();
         dout.close();
 
         return marshalledBytes;
+    }
+
+    public String getID(){
+        return myInfo.ip + ":" + myInfo.port;
     }
 }

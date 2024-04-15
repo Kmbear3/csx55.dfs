@@ -34,6 +34,8 @@ public class ChunkServer implements Node{
     ArrayList<Chunk> chunks;
     int totalSpace = 1 * Constants.GB;
     int usedSpace = 0;
+    public String csIP;
+    public int port;
 
     public ChunkServer(String controllerIp, int controllerPort){
         try {
@@ -43,6 +45,9 @@ public class ChunkServer implements Node{
             TCPReceiverThread registryReceiver = new TCPReceiverThread(this, registrySocket);
             Thread registryReceiverThread = new Thread(registryReceiver);
             registryReceiverThread.start();
+
+            this.csIP = this.server.getIP();
+            this.port = this.server.getPort();
 
             configureServer(this);
             startHeartBeats();

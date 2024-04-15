@@ -13,6 +13,7 @@ import csx55.dfs.util.CLIHandler;
 import csx55.dfs.util.Constants;
 import csx55.dfs.util.HeartBeatThread;
 import csx55.dfs.wireformats.Event;
+import csx55.dfs.wireformats.UploadRequest;
 
 public class Client implements Node{
 
@@ -58,14 +59,10 @@ public class Client implements Node{
     }
 
     public void uploadFile(String source, String destination) {
-        // Read file
-        // break into 64KB chunks (pad last on with 0)
-
-//        for(int i = 0; i < chunks.size(); i ++) {
-//            // Contact controller node, retrieve list of chunk servers
-//            // send chunks[0] to chunkServer[0]
-//        }
-
-        
+        try {
+            this.controllerSender.sendData((new UploadRequest(source, destination)).getBytes());
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 }
