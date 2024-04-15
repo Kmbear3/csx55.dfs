@@ -9,6 +9,7 @@ import csx55.dfs.node.Node;
 import csx55.dfs.transport.TCPReceiverThread;
 import csx55.dfs.transport.TCPSender;
 import csx55.dfs.transport.TCPServerThread;
+import csx55.dfs.util.CLIHandler;
 import csx55.dfs.util.Constants;
 import csx55.dfs.util.HeartBeatThread;
 import csx55.dfs.wireformats.Event;
@@ -28,7 +29,7 @@ public class ChunkServer implements Node{
     // If corruption is detected during reads and writes the controller node is informed
 
     String STORAGE_PATH = "/tmp/chunk-server/";
-    TCPSender registrySender;
+    TCPSender controllerSender;
     private TCPServerThread server;
     ArrayList<Chunk> chunks;
     int totalSpace = 1 * Constants.GB;
@@ -36,8 +37,9 @@ public class ChunkServer implements Node{
 
     public ChunkServer(String controllerIp, int controllerPort){
         try {
+            this.chunks = new ArrayList<>();
             Socket registrySocket = new Socket(controllerIp, controllerPort);
-            this.registrySender = new TCPSender(registrySocket);
+            this.controllerSender = new TCPSender(registrySocket);
             TCPReceiverThread registryReceiver = new TCPReceiverThread(this, registrySocket);
             Thread registryReceiverThread = new Thread(registryReceiver);
             registryReceiverThread.start();
@@ -85,6 +87,20 @@ public class ChunkServer implements Node{
 //        }
     }
 
-    public void sendToRegistry(byte[] bytes) {
+    public void sendToController(byte[] bytes) throws IOException{
+        this.controllerSender.sendData(bytes);
+    }
+
+    public static void main(String[] args){
+        String controllerName = args[0];
+        int controllerPort = Integer.parseInt(args[1]);
+
+        ChunkServer cs = new ChunkServer(controllerName, controllerPort);
+
+        CLIHandler cliHandler = new CLIHandler(cs);
+
+        while(true){
+            cliHandler.readCSInstructions();
+        }
     }
 }

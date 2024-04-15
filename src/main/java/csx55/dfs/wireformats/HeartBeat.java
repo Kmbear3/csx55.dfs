@@ -62,7 +62,7 @@ public class HeartBeat implements Event{
 
         dout.writeInt(this.numberOfChunks);
 
-        for(int i = 0; i < chunks.size(); i ++ ){
+        for(int i = 0; i < this.numberOfChunks; i ++ ){
             chunks.get(i).marshall(dout);
         }
 

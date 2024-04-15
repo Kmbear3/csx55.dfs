@@ -6,4 +6,4 @@ gradle build
 
 clear
 
-java -cp ./build/classes/java/main/ csx55.chord.Discovery $1 
+java -cp ./build/classes/java/main/ csx55.dfs.replication.Controller $1

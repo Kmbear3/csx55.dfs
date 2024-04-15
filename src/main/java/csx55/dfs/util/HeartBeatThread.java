@@ -19,7 +19,7 @@ public class HeartBeatThread implements Runnable {
             ArrayList<Chunk> chunks = cs.getChunks();
             int freeSpace = cs.getFreeSpace();
             HeartBeat beat = new HeartBeat(chunks, freeSpace);
-            cs.sendToRegistry(beat.getBytes());
+            cs.sendToController(beat.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -29,6 +29,11 @@ public class HeartBeatThread implements Runnable {
     public void run() {
         while(true){
             sendBeat();
+            try {
+                Thread.sleep(15000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

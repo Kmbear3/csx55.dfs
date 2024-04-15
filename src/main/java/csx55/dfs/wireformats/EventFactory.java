@@ -13,8 +13,10 @@ public class EventFactory {
         try {
             int messageType = din.readInt();
             switch(messageType){
+                case Protocol.HEART_BEAT:
+                    return new HeartBeat(marshalledBytes);
                 default:
-                    System.err.println("Didn't have an event!" + messageType);
+                    System.err.println("Didn't have an event! " + messageType);
                     return null;
 
             }
