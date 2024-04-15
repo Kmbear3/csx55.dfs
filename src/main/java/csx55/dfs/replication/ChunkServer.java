@@ -48,11 +48,12 @@ public class ChunkServer implements Node{
             Thread registryReceiverThread = new Thread(registryReceiver);
             registryReceiverThread.start();
 
+            configureServer(this);
+
             this.csIP = this.server.getIP();
             this.port = this.server.getPort();
             this.myInfo = new IpPort(csIP, port);
 
-            configureServer(this);
             startHeartBeats();
 
         } catch (UnknownHostException e) {
