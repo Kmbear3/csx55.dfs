@@ -38,15 +38,15 @@ public class CLIHandler {
         String instruction = scan.nextLine(); // need parser
         String[] result = instruction.split("\\s");
 
-        // System.out.println("Instruction: " + result[0]);
+        System.out.println("Instruction: " + result[0]);
 
-//        switch(result[0]){
-//            case "peer-nodes":
-//                controller.printPeerNodes();
-//                break;
-//            default:
-//                System.out.println("Incorrect Instruction. Please try again.");
-//        }
+        switch(result[0]){
+            case "print-proxies":
+                controller.printAllProxies();
+                break;
+            default:
+                System.out.println("Incorrect Instruction. Please try again.");
+        }
     }
 
     public void readCSInstructions(){

@@ -89,4 +89,24 @@ public class HeartBeat implements Event{
     public String getID(){
         return myInfo.ip + ":" + myInfo.port;
     }
+
+    public String getIP(){
+        return this.myInfo.ip;
+    }
+
+    public int getPort(){
+        return this.myInfo.port;
+    }
+    public ArrayList<Chunk> getChunks() {
+        return chunks;
+    }
+
+    public int getNumberOfChunks() {
+        return numberOfChunks;
+    }
+
+    public int getFreeSpace() {
+        return freeSpace;
+    }
+
 }

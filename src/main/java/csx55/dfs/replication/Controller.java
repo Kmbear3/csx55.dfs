@@ -76,4 +76,9 @@ public class Controller implements Node {
         }
     }
 
+    public void printAllProxies() {
+        for(CSProxy proxy : csProxies.values()){
+            proxy.printMetaData();
+        }
+    }
 }

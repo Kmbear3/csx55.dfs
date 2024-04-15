@@ -12,6 +12,7 @@ import csx55.dfs.transport.TCPServerThread;
 import csx55.dfs.util.CLIHandler;
 import csx55.dfs.util.Constants;
 import csx55.dfs.util.HeartBeatThread;
+import csx55.dfs.util.IpPort;
 import csx55.dfs.wireformats.Event;
 
 
@@ -36,6 +37,7 @@ public class ChunkServer implements Node{
     int usedSpace = 0;
     public String csIP;
     public int port;
+    public IpPort myInfo;
 
     public ChunkServer(String controllerIp, int controllerPort){
         try {
@@ -48,6 +50,7 @@ public class ChunkServer implements Node{
 
             this.csIP = this.server.getIP();
             this.port = this.server.getPort();
+            this.myInfo = new IpPort(csIP, port);
 
             configureServer(this);
             startHeartBeats();
