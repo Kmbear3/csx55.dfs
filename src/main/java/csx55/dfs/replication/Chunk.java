@@ -30,7 +30,7 @@ public class Chunk {
     }
 
     // Metadata chunk
-    public Chunk(int sequenceNum, String timestamp, int version, String filename{
+    public Chunk(int sequenceNum, String timestamp, int version, String filename){
         this.sequenceNum = sequenceNum;
         this.timestamp = timestamp;
         this.version = version;
@@ -60,7 +60,7 @@ public class Chunk {
     }
 
 
-    // Just the chunk meta data, not the ACTUAL chunk
+    // Just the chunk metadata, not the ACTUAL chunk
 
     public void marshall(DataOutputStream dout) throws IOException {
         dout.writeInt(sequenceNum);
