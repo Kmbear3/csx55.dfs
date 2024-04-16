@@ -18,7 +18,6 @@ public class CLIHandler {
     private ChunkServer cs;
     private Client client;
 
-
     public CLIHandler(Controller controller){
        this.scan = new Scanner(System.in);
        this.controller = controller;
