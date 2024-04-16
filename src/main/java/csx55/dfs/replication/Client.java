@@ -14,6 +14,8 @@ import csx55.dfs.util.Constants;
 import csx55.dfs.util.HeartBeatThread;
 import csx55.dfs.wireformats.Event;
 import csx55.dfs.wireformats.UploadRequest;
+import csx55.dfs.wireformats.UploadResponse;
+import csx55.dfs.wireformats.Protocol;
 
 public class Client implements Node{
 
@@ -42,7 +44,18 @@ public class Client implements Node{
 
     @Override
     public void onEvent(Event event, Socket socket) {
-
+        try {
+            switch(event.getType()){
+                case Protocol.UPLOAD_RESPONSE:
+                    handleUploadReponse(new UploadResponse(event.getBytes()));
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + event.getType());
+            }
+        } catch (IOException e) {
+            System.err.println("Error: MessagingNode.onEvent()");
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args){
@@ -64,5 +77,14 @@ public class Client implements Node{
         }catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    private void handleUploadReponse(UploadResponse uploadResponse) {
+        // Randomly choose a chunkserver to initiate file transfer to
+        // Fuck, this won't work. State needs to be saved in-between the receiving of new chunkservers
+        // Build out an object for this to save the intermediary state - file chunks
+        // --> UploadManager.java
+        //
+
     }
 }

@@ -55,7 +55,7 @@ public class UploadResponse implements Event{
         WireHelper.marshallString(dout, this.src);
         WireHelper.marshallString(dout, this.dest);
 
-        for(int i = 0; i < cs.length; i ++){
+        for (int i = 0; i < cs.length; i++) {
             cs[i].marshall(dout);
         }
 
@@ -65,6 +65,17 @@ public class UploadResponse implements Event{
         dout.close();
 
         return marshalledBytes;
+    }
 
+    public String getSrc() {
+        return src;
+    }
+
+    public String getDest() {
+        return dest;
+    }
+
+    public IpPort[] getCs() {
+        return cs;
     }
 }
