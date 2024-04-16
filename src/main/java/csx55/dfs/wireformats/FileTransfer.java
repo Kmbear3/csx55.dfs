@@ -7,9 +7,18 @@ import java.io.IOException;
 public class FileTransfer implements Event{
     byte[] chunk;
     IpPort[] cs;
+    int sequenceNumber;
+    String destination;
+    String fileName;
 
-    public FileTransfer(IpPort[] chunkServers, byte[] chunk){
+    int MESSAGE_TYPE = Protocol.FILE_TRANSFER;
 
+    public FileTransfer(IpPort[] chunkServers, byte[] chunk, int sequenceNumber, String destination, String filename){
+        this.chunk = chunk;
+        this.cs = chunkServers;
+        this.sequenceNumber = sequenceNumber;
+        this.destination = destination;
+        this.fileName = filename;
     }
 
     public FileTransfer(byte[] marshalledBytes){
@@ -19,11 +28,31 @@ public class FileTransfer implements Event{
 
     @Override
     public int getType() {
-        return 0;
+        return MESSAGE_TYPE;
     }
 
     @Override
     public byte[] getBytes() throws IOException {
         return new byte[0];
+    }
+
+    public byte[] getChunk() {
+        return chunk;
+    }
+
+    public IpPort[] getCs() {
+        return cs;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 }

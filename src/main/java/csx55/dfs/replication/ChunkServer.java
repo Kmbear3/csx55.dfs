@@ -14,6 +14,7 @@ import csx55.dfs.util.Constants;
 import csx55.dfs.util.HeartBeatThread;
 import csx55.dfs.util.IpPort;
 import csx55.dfs.wireformats.Event;
+import csx55.dfs.wireformats.FileTransfer;
 import csx55.dfs.wireformats.Protocol;
 import csx55.dfs.wireformats.UploadResponse;
 
@@ -87,18 +88,23 @@ public class ChunkServer implements Node{
 
     @Override
     public void onEvent(Event event, Socket socket) {
-//        try {
-//            switch(event.getType()){
-//                case Protocol.UPLOAD_RESPONSE:
-//                    handleUploadReponse(new UploadResponse(event.getBytes()));
-//                    break;
-//                default:
-//                    throw new IllegalStateException("Unexpected value: " + event.getType());
-//            }
-//        } catch (IOException e) {
-//            System.err.println("Error: MessagingNode.onEvent()");
-//            e.printStackTrace();
-//        }
+        try {
+            switch(event.getType()){
+                case Protocol.FILE_TRANSFER:
+                    handleChunkUpload(new FileTransfer(event.getBytes()));
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + event.getType());
+            }
+        } catch (IOException e) {
+            System.err.println("Error: MessagingNode.onEvent()");
+            e.printStackTrace();
+        }
+    }
+
+    synchronized private void handleChunkUpload(FileTransfer ft) {
+        Chunk chunk = new Chunk(ft.getChunk(), ft.getSequenceNumber(), ft.getFileName(), ft.getDestination());
+        chunks.add(chunk);
     }
 
     public void sendToController(byte[] bytes) throws IOException{

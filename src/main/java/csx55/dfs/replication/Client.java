@@ -9,18 +9,17 @@ import csx55.dfs.node.Node;
 import csx55.dfs.transport.TCPReceiverThread;
 import csx55.dfs.transport.TCPSender;
 import csx55.dfs.transport.TCPServerThread;
-import csx55.dfs.util.CLIHandler;
-import csx55.dfs.util.Constants;
-import csx55.dfs.util.HeartBeatThread;
-import csx55.dfs.wireformats.Event;
-import csx55.dfs.wireformats.UploadRequest;
-import csx55.dfs.wireformats.UploadResponse;
-import csx55.dfs.wireformats.Protocol;
+import csx55.dfs.util.*;
+import csx55.dfs.wireformats.*;
 
 public class Client implements Node{
 
     TCPSender controllerSender;
     private TCPServerThread server;
+    byte[] file = null;
+    int sequenceNumber = 0;
+    String filename = "";
+
 
     public Client(String controllerIp, int port){
         try {
@@ -47,7 +46,7 @@ public class Client implements Node{
         try {
             switch(event.getType()){
                 case Protocol.UPLOAD_RESPONSE:
-                    handleUploadReponse(new UploadResponse(event.getBytes()));
+                    handleUploadResponse(new UploadResponse(event.getBytes()));
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + event.getType());
@@ -73,18 +72,41 @@ public class Client implements Node{
 
     public void uploadFile(String source, String destination) {
         try {
+            file = FileManager.readFromDisk(source);
+            sequenceNumber = 0;
+            String[] inputPath = source.split("/");
+            filename = inputPath[inputPath.length - 1];
+
             this.controllerSender.sendData((new UploadRequest(source, destination)).getBytes());
         }catch(IOException e){
             e.printStackTrace();
         }
     }
 
-    private void handleUploadReponse(UploadResponse uploadResponse) {
-        // Randomly choose a chunkserver to initiate file transfer to
-        // Fuck, this won't work. State needs to be saved in-between the receiving of new chunkservers
-        // Build out an object for this to save the intermediary state - file chunks
-        // --> UploadManager.java
-        //
+    private void handleUploadResponse(UploadResponse uploadResponse) {
+        IpPort[] chunkservers = uploadResponse.getCs();
 
+        byte[] chunk = new byte[64 * Constants.KB];
+
+        // Le jank -- NOTICE -- if file values are broken, check here!!!!!
+
+        int i = 0;
+        while(i < chunk.length && (i + (sequenceNumber * 64 * Constants.KB)) < file.length){
+            chunk[i] = file[(i + (sequenceNumber * 64 * Constants.KB))];
+            i++;
+        }
+        if(i != chunk.length){
+            while(i < chunk.length){
+                chunk[i] = 0;
+                i++;
+            }
+        }
+
+        try {
+            chunkservers[0].sendMessage(new FileTransfer(chunkservers, chunk, sequenceNumber, uploadResponse.getDest(), filename).getBytes());
+            this.controllerSender.sendData((new UploadRequest(uploadResponse.getSrc(), uploadResponse.getDest())).getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

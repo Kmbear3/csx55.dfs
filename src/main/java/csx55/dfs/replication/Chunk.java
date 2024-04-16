@@ -21,12 +21,15 @@ public class Chunk {
     private final String storagePath = "/tmp/chunk-server/";
     private String filename;
 
-    public Chunk(byte[] data, int sequence, String filename){
+    public Chunk(byte[] data, int sequence, String filename, String destinationPath){
         this.sequenceNum = sequence;
         this.timestamp = LocalDateTime.now().toString();
         this.version = 0;
         this.filename = filename + "_chunk" + sequence;
         checksums = createChecksums(data);
+        String outputPath = storagePath + destinationPath + filename;
+        System.out.println("Storing file: " + outputPath);
+        FileManager.writeToDisk(outputPath, data);
     }
 
     // Metadata chunk
