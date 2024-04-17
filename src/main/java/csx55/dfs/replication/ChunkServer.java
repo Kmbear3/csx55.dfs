@@ -21,18 +21,6 @@ import csx55.dfs.wireformats.UploadResponse;
 
 public class ChunkServer implements Node{
 
-    // Stores chunks belonging to files on local disk
-    // Checksums are adding to the files before they are written to disk
-    // REads will also check checksums of the 8KB slices  --> then send chunk to the client
-
-//    final private int TOTAL_SPACE_AVAILABLE = GB;
-//    int GB  = 10;
-//    int MB = 10;
-
-    // list of files with the chunks associated to the files
-    // If corruption is detected during reads and writes the controller node is informed
-
-    String STORAGE_PATH = "/tmp/chunk-server/";
     TCPSender controllerSender;
     private TCPServerThread server;
     ArrayList<Chunk> chunks;
@@ -104,6 +92,9 @@ public class ChunkServer implements Node{
 
     synchronized private void handleChunkUpload(FileTransfer ft) {
         System.out.println("Received file upload: " + ft.getFileName());
+        byte[] chunkByte = ft.getChunk();
+        this.usedSpace = this.usedSpace + chunkByte.length;
+
         Chunk chunk = new Chunk(ft.getChunk(), ft.getSequenceNumber(), ft.getFileName(), ft.getDestination());
         chunks.add(chunk);
     }

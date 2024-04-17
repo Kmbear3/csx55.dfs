@@ -33,9 +33,15 @@ public class CSProxy {
     }
 
     public void printMetaData(){
+        System.out.println("---------------------------------------------------------------------------------------------------------------");
         System.out.println("Chunks Server - " + IP + ":" + port);
         System.out.println("Number of Chunks: " + totalChunks);
         System.out.println("FreeSpace: " + freeSpace);
+        System.out.println("------------------------------------------------  Chunk MetaData  -----------------------------------------------");
+        System.out.println(String.format("| %-10s | %28s | %10s | %37s |", "Sequence" ,"TimeStamp","Version", "Filename"));
+        for(Chunk chunk : chunks){
+            chunk.printMetaData();
+        }
     }
 
     public IpPort getIpPort(){

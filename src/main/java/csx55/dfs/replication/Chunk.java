@@ -32,7 +32,7 @@ public class Chunk {
         checksums = createChecksums(data);
         String outputPath = storagePath + destinationPath + this.filename;
         try {
-            // Create directory
+            // Create directory - mayhaps jank
             String storageLocation = storagePath + destinationPath + "/";
             Path path = Paths.get(storageLocation);
             Files.createDirectories(path);
@@ -89,5 +89,9 @@ public class Chunk {
         this.timestamp = WireHelper.unmarshallString(din);
         this.version = din.readInt();
         this.filename = WireHelper.unmarshallString(din);
+    }
+
+    public void printMetaData(){
+        System.out.println(String.format("| %-10s | %28s | %10s | %37s |", sequenceNum, timestamp, version, filename));
     }
 }
