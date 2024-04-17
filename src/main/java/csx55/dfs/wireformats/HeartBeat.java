@@ -31,7 +31,7 @@ public class HeartBeat implements Event{
         }
 
         this.numberOfChunks = din.readInt();
-        ArrayList<Chunk> chunks = new ArrayList<>();
+        this.chunks = new ArrayList<>();
         for(int i = 0; i < numberOfChunks; i++){
             chunks.add(new Chunk(din));
         }

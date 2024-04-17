@@ -19,6 +19,7 @@ public class Client implements Node{
     byte[] file = null;
     int sequenceNumber = 0;
     String filename = "";
+    long transferredSize = 0;
 
 
     public Client(String controllerIp, int port){
@@ -72,6 +73,7 @@ public class Client implements Node{
 
     synchronized public void uploadFile(String source, String destination) {
         try {
+            transferredSize = 0;
             file = FileManager.readFromDisk(source);
             sequenceNumber = 0;
             String[] inputPath = source.split("/");
@@ -95,11 +97,13 @@ public class Client implements Node{
         while(i < chunk.length && (i + (sequenceNumber * 64 * Constants.KB)) < file.length){
             chunk[i] = file[(i + (sequenceNumber * 64 * Constants.KB))];
             i++;
+            transferredSize++;
         }
         if(i != chunk.length){
             while(i < chunk.length){
                 chunk[i] = 0;
                 i++;
+                transferredSize++;
             }
         }
         // Infinite loop
@@ -107,7 +111,11 @@ public class Client implements Node{
         System.out.println("Sending chunk: " + sequenceNumber);
         try {
             chunkservers[0].sendMessage(new FileTransfer(chunkservers, chunk, sequenceNumber, uploadResponse.getDest(), filename).getBytes());
-            this.controllerSender.sendData((new UploadRequest(uploadResponse.getSrc(), uploadResponse.getDest())).getBytes());
+
+            // There is still data needing to be transmitted, request new chunkServers
+            if(!(transferredSize >= file.length)){
+                this.controllerSender.sendData((new UploadRequest(uploadResponse.getSrc(), uploadResponse.getDest())).getBytes());
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
