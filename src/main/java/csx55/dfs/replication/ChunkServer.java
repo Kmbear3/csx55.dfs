@@ -90,13 +90,36 @@ public class ChunkServer implements Node{
         }
     }
 
-    synchronized private void handleChunkUpload(FileTransfer ft) {
+    synchronized private void handleChunkUpload(FileTransfer ft) throws IOException{
         System.out.println("Received file upload: " + ft.getFileName());
         byte[] chunkByte = ft.getChunk();
         this.usedSpace = this.usedSpace + chunkByte.length;
 
         Chunk chunk = new Chunk(ft.getChunk(), ft.getSequenceNumber(), ft.getFileName(), ft.getDestination());
         chunks.add(chunk);
+        forwardChunk(ft);
+    }
+
+    private void forwardChunk(FileTransfer ft) throws IOException {
+        IpPort[] chunkservers = ft.getCs();
+        System.out.println("chunkserver size: " + chunkservers.length);
+        if(chunkservers.length > 1){
+            ArrayList<IpPort> forwards = new ArrayList<>();
+            for(int i = 0; i < chunkservers.length; i++){
+                chunkservers[i].print();
+                if(!chunkservers[i].equals(myInfo)) {
+                    forwards.add(chunkservers[i]);
+                }
+            }
+            IpPort[] ftForwards = new IpPort[forwards.size()];
+            System.out.println("Made it here");
+            for(int i = 0; i < ftForwards.length; i++){
+                ftForwards[i] = forwards.get(i);
+            }
+            FileTransfer fileTransfer = new FileTransfer(ftForwards, ft.getChunk(), ft.getSequenceNumber(), ft.getDestination(), ft.getFileName());
+            ftForwards[0].sendMessage(fileTransfer.getBytes());
+            System.out.println("Replicating Chunk...");
+        }
     }
 
     public void sendToController(byte[] bytes) throws IOException{

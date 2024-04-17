@@ -33,7 +33,9 @@ public class FileTransfer implements Event{
         }
 
         this.chunk = WireHelper.unmarshallFile(din);
-        this.cs = new IpPort[3];
+
+        int chunkServerNum = din.readInt();
+        this.cs = new IpPort[chunkServerNum];
 
         for(int i = 0; i < cs.length; i ++){
             cs[i] = new IpPort(din);
@@ -62,6 +64,7 @@ public class FileTransfer implements Event{
 
         WireHelper.marshallFile(dout, this.chunk);
 
+        dout.writeInt(cs.length);
         for(int i = 0; i < cs.length; i ++){
             cs[i].marshall(dout);
         }

@@ -10,9 +10,7 @@ import csx55.dfs.wireformats.*;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Controller implements Node {
@@ -73,8 +71,15 @@ public class Controller implements Node {
         ArrayList<CSProxy> proxies = new ArrayList<>(csProxies.values());
         Random rand = new Random();
 
+        Set<Integer> indexes = new HashSet<>();
+        while(indexes.size() < 3){
+            indexes.add(rand.nextInt(proxies.size()));
+        }
+
+        Integer[] indexArray = indexes.toArray(new Integer[indexes.size()]);
+
         for(int i = 0; i < 3; i++){
-            randomCS[i] = proxies.get(rand.nextInt(proxies.size())).getIpPort();
+            randomCS[i] = proxies.get(indexArray[i]).getIpPort();
         }
 
         UploadResponse response = new UploadResponse(request.getSrc(), request.getDest(), randomCS);

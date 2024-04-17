@@ -32,4 +32,14 @@ public class IpPort {
         TCPSender sender = new TCPSender(registrySocket);
         sender.sendData(bytes);
     }
+
+    public boolean equals(IpPort other){
+        return other.ip.equals(ip) && other.port == port;
+    }
+
+    public void print(){
+        System.out.println("IP: " + ip);
+        System.out.println("Port: " + port);
+
+    }
 }
