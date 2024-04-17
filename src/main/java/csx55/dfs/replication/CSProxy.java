@@ -47,4 +47,13 @@ public class CSProxy {
     public IpPort getIpPort(){
         return new IpPort(IP, port);
     }
+
+    public boolean hasFile(String filename){
+        for(Chunk chunk : chunks){
+            if(chunk.getName().equals(filename)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

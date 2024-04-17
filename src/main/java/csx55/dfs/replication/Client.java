@@ -136,8 +136,10 @@ public class Client implements Node{
 
     public void downloadFile(String source, String destination) {
         try {
+
+            
             this.downloadDestination = destination;
-            DownloadRequest request = new DownloadRequest(source);
+            DownloadRequest request = new DownloadRequest(source, 0);
             controllerSender.sendData(request.getBytes());
         }catch (IOException e){
             e.printStackTrace();

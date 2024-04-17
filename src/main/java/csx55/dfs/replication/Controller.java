@@ -47,6 +47,8 @@ public class Controller implements Node {
                 case Protocol.UPLOAD_REQUEST:
                     handleUploadRequest(new UploadRequest(event.getBytes()), socket);
                     break;
+                case Protocol.DOWNLOAD_REQUEST:
+                    handleDownloadRequest(new DownloadRequest(event.getBytes()));
                 default:
                     System.out.println("Protocol Unmatched! " + event.getType());
                     System.exit(0);
@@ -54,6 +56,10 @@ public class Controller implements Node {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    synchronized private void handleDownloadRequest(DownloadRequest downloadRequest) {
+        
     }
 
     private void handleHeartBeat(HeartBeat beat) {

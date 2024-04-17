@@ -7,6 +7,8 @@ public class DownloadResponse implements Event{
 
     int numberOfChunks;
 
+    // Include all chunk locations in this response
+
     public DownloadResponse(byte[] marshalledBytes) throws IOException{
         ByteArrayInputStream baInputStream =  new ByteArrayInputStream(marshalledBytes);
         DataInputStream din = new DataInputStream(new BufferedInputStream(baInputStream));

@@ -96,6 +96,11 @@ public class Chunk {
     }
 
     public String getName(){
+        // Include chunk information
         return filename;
+    }
+
+    public String getFilename(){
+        return filename.split("_")[0];
     }
 }

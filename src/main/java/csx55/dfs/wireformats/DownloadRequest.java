@@ -6,9 +6,11 @@ public class DownloadRequest implements Event{
     int MESSAGE_TYPE = Protocol.DOWNLOAD_REQUEST;
 
     String filePath;
+    int sequence;
 
-    public DownloadRequest(String filePath){
+    public DownloadRequest(String filePath, int sequence){
         this.filePath = filePath;
+        this.sequence = sequence;
     }
 
     public DownloadRequest(byte[] marshalledBytes) throws IOException{
@@ -20,6 +22,8 @@ public class DownloadRequest implements Event{
             System.err.println("type mismatch in DownloadRequest");
         }
         this.filePath = WireHelper.unmarshallString(din);
+        this.sequence = din.readInt();
+
         baInputStream.close();
         din.close();
     }
@@ -39,6 +43,7 @@ public class DownloadRequest implements Event{
         dout.writeInt(this.MESSAGE_TYPE);
 
         WireHelper.marshallString(dout, this.filePath);
+        dout.writeInt(this.sequence);
 
         dout.flush();
         marshalledBytes = baOutputStream.toByteArray();
