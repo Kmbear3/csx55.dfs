@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import csx55.dfs.node.Node;
 import csx55.dfs.transport.TCPReceiverThread;
@@ -23,7 +24,7 @@ public class ChunkServer implements Node{
 
     TCPSender controllerSender;
     private TCPServerThread server;
-    ArrayList<Chunk> chunks;
+    HashMap<String, Chunk> chunks;
     int totalSpace = 1 * Constants.GB;
     int usedSpace = 0;
     public String csIP;
@@ -32,7 +33,7 @@ public class ChunkServer implements Node{
 
     public ChunkServer(String controllerIp, int controllerPort){
         try {
-            this.chunks = new ArrayList<>();
+            this.chunks = new HashMap<>();
             Socket registrySocket = new Socket(controllerIp, controllerPort);
             this.controllerSender = new TCPSender(registrySocket);
             TCPReceiverThread registryReceiver = new TCPReceiverThread(this, registrySocket);
@@ -66,7 +67,7 @@ public class ChunkServer implements Node{
         heartThread.start();
     }
 
-    public ArrayList<Chunk> getChunks(){
+    public HashMap<String, Chunk> getChunks(){
         return this.chunks;
     }
 
@@ -96,7 +97,7 @@ public class ChunkServer implements Node{
         this.usedSpace = this.usedSpace + chunkByte.length;
 
         Chunk chunk = new Chunk(ft.getChunk(), ft.getSequenceNumber(), ft.getFileName(), ft.getDestination());
-        chunks.add(chunk);
+        chunks.put(chunk.getName(), chunk);
         forwardChunk(ft);
     }
 

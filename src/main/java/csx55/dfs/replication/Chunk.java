@@ -94,4 +94,8 @@ public class Chunk {
     public void printMetaData(){
         System.out.println(String.format("| %-10s | %28s | %10s | %37s |", sequenceNum, timestamp, version, filename));
     }
+
+    public String getName(){
+        return filename;
+    }
 }

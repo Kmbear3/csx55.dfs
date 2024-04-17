@@ -16,7 +16,7 @@ public class HeartBeatThread implements Runnable {
 
     private void sendBeat(){
         try {
-            ArrayList<Chunk> chunks = cs.getChunks();
+            ArrayList<Chunk> chunks = new ArrayList<>(cs.getChunks().values());
             int freeSpace = cs.getFreeSpace();
             HeartBeat beat = new HeartBeat(chunks, freeSpace, cs.myInfo);
             cs.sendToController(beat.getBytes());
