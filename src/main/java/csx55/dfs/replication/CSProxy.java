@@ -37,4 +37,8 @@ public class CSProxy {
         System.out.println("Number of Chunks: " + totalChunks);
         System.out.println("FreeSpace: " + freeSpace);
     }
+
+    public IpPort getIpPort(){
+        return new IpPort(IP, port);
+    }
 }

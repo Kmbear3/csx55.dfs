@@ -103,6 +103,7 @@ public class ChunkServer implements Node{
     }
 
     synchronized private void handleChunkUpload(FileTransfer ft) {
+        System.out.println("Received file upload: " + ft.getFileName());
         Chunk chunk = new Chunk(ft.getChunk(), ft.getSequenceNumber(), ft.getFileName(), ft.getDestination());
         chunks.add(chunk);
     }

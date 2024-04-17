@@ -51,4 +51,12 @@ public class UploadRequest implements Event {
 
         return marshalledBytes;
     }
+
+    public String getSrc() {
+        return src;
+    }
+
+    public String getDest() {
+        return dest;
+    }
 }

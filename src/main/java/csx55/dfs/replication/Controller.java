@@ -1,13 +1,18 @@
 package csx55.dfs.replication;
 
+import csx55.dfs.transport.TCPSender;
 import csx55.dfs.util.CLIHandler;
+import csx55.dfs.util.IpPort;
 import csx55.dfs.wireformats.Event;
 import csx55.dfs.node.Node;
 import csx55.dfs.transport.TCPServerThread;
 import csx55.dfs.wireformats.*;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Controller implements Node {
@@ -42,9 +47,10 @@ public class Controller implements Node {
                     System.out.println("Received beat");
                     break;
                 case Protocol.UPLOAD_REQUEST:
-                    handleUploadRequest(socket);
+                    handleUploadRequest(new UploadRequest(event.getBytes()), socket);
+                    break;
                 default:
-                    System.out.println("Protocol Unmatched!");
+                    System.out.println("Protocol Unmatched! " + event.getType());
                     System.exit(0);
             }
         } catch (Exception e) {
@@ -62,8 +68,18 @@ public class Controller implements Node {
         }
     }
 
-    private void handleUploadRequest(Socket socket) {
+    synchronized private void handleUploadRequest(UploadRequest request, Socket socket) throws IOException {
+        IpPort[] randomCS = new IpPort[3];
+        ArrayList<CSProxy> proxies = new ArrayList<>(csProxies.values());
+        Random rand = new Random();
 
+        for(int i = 0; i < 3; i++){
+            randomCS[i] = proxies.get(rand.nextInt(proxies.size())).getIpPort();
+        }
+
+        UploadResponse response = new UploadResponse(request.getSrc(), request.getDest(), randomCS);
+        TCPSender send = new TCPSender(socket);
+        send.sendData(response.getBytes());
     }
 
     public static void main(String[] args){

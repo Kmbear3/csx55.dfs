@@ -7,10 +7,13 @@ import csx55.dfs.wireformats.WireHelper;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 
 public class Chunk {
 
@@ -27,7 +30,17 @@ public class Chunk {
         this.version = 0;
         this.filename = filename + "_chunk" + sequence;
         checksums = createChecksums(data);
-        String outputPath = storagePath + destinationPath + filename;
+        String outputPath = storagePath + destinationPath + this.filename;
+        try {
+            // Create directory
+            String storageLocation = storagePath + destinationPath + "/";
+            Path path = Paths.get(storageLocation);
+            Files.createDirectories(path);
+
+        } catch (IOException e) {
+            System.err.println("Failed to create directory!");
+            e.printStackTrace();
+        }
         System.out.println("Storing file: " + outputPath);
         FileManager.writeToDisk(outputPath, data);
     }
@@ -53,7 +66,6 @@ public class Chunk {
                 }
 
                 String checksum = new String(md.digest(slice));
-                System.out.println(checksum);
                 checksums.add(checksum);
             }
         } catch (NoSuchAlgorithmException e) {

@@ -58,7 +58,7 @@ public class Client implements Node{
     }
 
     public static void main(String[] args){
-
+        System.out.println("Client Starting...");
         String controllerName = args[0];
         int controllerPort = Integer.parseInt(args[1]);
 
@@ -66,16 +66,17 @@ public class Client implements Node{
         CLIHandler cliHandler = new CLIHandler(client);
 
         while(true){
-            cliHandler.readCSInstructions();
+            cliHandler.readClientInstructions();
         }
     }
 
-    public void uploadFile(String source, String destination) {
+    synchronized public void uploadFile(String source, String destination) {
         try {
             file = FileManager.readFromDisk(source);
             sequenceNumber = 0;
             String[] inputPath = source.split("/");
             filename = inputPath[inputPath.length - 1];
+            System.out.println("Uploading file: " + filename);
 
             this.controllerSender.sendData((new UploadRequest(source, destination)).getBytes());
         }catch(IOException e){
@@ -83,13 +84,13 @@ public class Client implements Node{
         }
     }
 
-    private void handleUploadResponse(UploadResponse uploadResponse) {
+    synchronized private void handleUploadResponse(UploadResponse uploadResponse) {
         IpPort[] chunkservers = uploadResponse.getCs();
-
         byte[] chunk = new byte[64 * Constants.KB];
 
         // Le jank -- NOTICE -- if file values are broken, check here!!!!!
 
+        System.out.println("File length: " + file.length);
         int i = 0;
         while(i < chunk.length && (i + (sequenceNumber * 64 * Constants.KB)) < file.length){
             chunk[i] = file[(i + (sequenceNumber * 64 * Constants.KB))];
@@ -101,12 +102,15 @@ public class Client implements Node{
                 i++;
             }
         }
+        // Infinite loop
 
+        System.out.println("Sending chunk: " + sequenceNumber);
         try {
             chunkservers[0].sendMessage(new FileTransfer(chunkservers, chunk, sequenceNumber, uploadResponse.getDest(), filename).getBytes());
             this.controllerSender.sendData((new UploadRequest(uploadResponse.getSrc(), uploadResponse.getDest())).getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        sequenceNumber++;
     }
 }

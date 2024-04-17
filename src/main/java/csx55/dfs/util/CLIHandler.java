@@ -63,6 +63,7 @@ public class CLIHandler {
 
         switch(result[0]) {
             case "upload":
+                System.out.println("uploading.. ");
                 if(result.length != 3){
                     System.err.println("incorrect number of arguments for upload");
                 }else{
