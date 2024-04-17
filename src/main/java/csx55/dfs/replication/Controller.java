@@ -67,6 +67,7 @@ public class Controller implements Node {
     }
 
     synchronized private void handleUploadRequest(UploadRequest request, Socket socket) throws IOException {
+        // Include FreeSpace as one of the metrics used to decide CS
         IpPort[] randomCS = new IpPort[3];
         ArrayList<CSProxy> proxies = new ArrayList<>(csProxies.values());
         Random rand = new Random();

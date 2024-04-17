@@ -69,6 +69,14 @@ public class CLIHandler {
                 }else{
                     client.uploadFile(result[1], result[2]);
                 }
+                break;
+            case "download":
+                System.out.println("Downloading.. ");
+                if(result.length != 3){
+                    System.err.println("incorrect number of arguments for Download");
+                }else{
+                    client.downloadFile(result[1], result[2]);
+                }
         }
     }
 }

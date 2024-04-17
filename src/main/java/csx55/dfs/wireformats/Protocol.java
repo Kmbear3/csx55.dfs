@@ -5,5 +5,7 @@ public class Protocol {
     public static final int UPLOAD_REQUEST = 2;
     public static final int UPLOAD_RESPONSE = 3;
     public static final int FILE_TRANSFER = 4;
-
+    public static final int DOWNLOAD_REQUEST = 5;
+    public static final int DOWNLOAD_RESPONSE = 6;
+    public static final int FILE_CHUNK = 7;
 }

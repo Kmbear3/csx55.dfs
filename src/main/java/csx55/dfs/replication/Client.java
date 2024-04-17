@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import csx55.dfs.node.Node;
 import csx55.dfs.transport.TCPReceiverThread;
@@ -16,11 +17,16 @@ public class Client implements Node{
 
     TCPSender controllerSender;
     private TCPServerThread server;
+
+    // Uploading variables:
     byte[] file = null;
     int sequenceNumber = 0;
     String filename = "";
     long transferredSize = 0;
 
+    // Downloading Variables:
+    String downloadDestination = "";
+    Downloader downloader;
 
     public Client(String controllerIp, int port){
         try {
@@ -48,6 +54,12 @@ public class Client implements Node{
             switch(event.getType()){
                 case Protocol.UPLOAD_RESPONSE:
                     handleUploadResponse(new UploadResponse(event.getBytes()));
+                    break;
+                case Protocol.DOWNLOAD_RESPONSE:
+                    handleDownloadResponse(new DownloadResponse(event.getBytes()));
+                    break;
+                case Protocol.FILE_CHUNK:
+                    downloader.receiveChunk(new FileChunk(event.getBytes()));
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + event.getType());
@@ -120,5 +132,21 @@ public class Client implements Node{
             throw new RuntimeException(e);
         }
         sequenceNumber++;
+    }
+
+    public void downloadFile(String source, String destination) {
+        try {
+            this.downloadDestination = destination;
+            DownloadRequest request = new DownloadRequest(source);
+            controllerSender.sendData(request.getBytes());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void handleDownloadResponse(DownloadResponse downloadResponse) {
+        downloader = new Downloader(downloadResponse.getNumberOfChunks(), this.downloadDestination);
+        Thread downloadThread = new Thread(downloader);
+        downloadThread.start();
     }
 }
