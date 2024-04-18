@@ -56,7 +56,7 @@ public class Client implements Node{
                     handleUploadResponse(new UploadResponse(event.getBytes()));
                     break;
                 case Protocol.DOWNLOAD_RESPONSE:
-                    handleDownloadResponse(new DownloadResponse(event.getBytes()));
+                    downloader.handleDownloadResponse(new DownloadResponse(event.getBytes()));
                     break;
                 case Protocol.FILE_CHUNK:
                     downloader.receiveChunk(new FileChunk(event.getBytes()));
@@ -134,20 +134,24 @@ public class Client implements Node{
         sequenceNumber++;
     }
 
+//    public void downloadFile(String source, String destination) {
+//        try {
+//            this.downloadDestination = destination;
+//            DownloadRequest request = new DownloadRequest(source, 0);
+//            controllerSender.sendData(request.getBytes());
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    private void handleDownloadResponse(DownloadResponse downloadResponse) {
+//        downloader = new Downloader(downloadResponse.getNumberOfChunks(), this.downloadDestination);
+//        Thread downloadThread = new Thread(downloader);
+//        downloadThread.start();
+//    }
+
     public void downloadFile(String source, String destination) {
-        try {
-
-            
-            this.downloadDestination = destination;
-            DownloadRequest request = new DownloadRequest(source, 0);
-            controllerSender.sendData(request.getBytes());
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    private void handleDownloadResponse(DownloadResponse downloadResponse) {
-        downloader = new Downloader(downloadResponse.getNumberOfChunks(), this.downloadDestination);
+        downloader = new Downloader(controllerSender, source, destination);
         Thread downloadThread = new Thread(downloader);
         downloadThread.start();
     }

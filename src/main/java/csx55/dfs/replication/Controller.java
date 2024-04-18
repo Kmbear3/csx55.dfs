@@ -49,6 +49,9 @@ public class Controller implements Node {
                     break;
                 case Protocol.DOWNLOAD_REQUEST:
                     handleDownloadRequest(new DownloadRequest(event.getBytes()));
+                case Protocol.CS_REQUEST:
+                    receiveChunkServerRequest(new CSRequest(event.getBytes()));
+                    break;
                 default:
                     System.out.println("Protocol Unmatched! " + event.getType());
                     System.exit(0);
@@ -58,8 +61,15 @@ public class Controller implements Node {
         }
     }
 
+    private void receiveChunkServerRequest(CSRequest csRequest) {
+        // this locates the chunk with the included sequence number
+        // the sends the sequence numebr wiht the IpPort back the client 
+    }
+
     synchronized private void handleDownloadRequest(DownloadRequest downloadRequest) {
-        
+        // Needs to locate all the chunks needed for the complete file
+        // Adn send itn back to the requesting client
+
     }
 
     private void handleHeartBeat(HeartBeat beat) {
