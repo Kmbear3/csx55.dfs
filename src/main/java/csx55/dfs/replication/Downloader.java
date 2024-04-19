@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Downloader implements Runnable {
@@ -71,19 +72,28 @@ public class Downloader implements Runnable {
         for(int i = 0; i < receivedChunks; i++){
             byte[] chunk = unassembledFile.get(i);
             for(int j = 0; j < chunk.length; j++){
-                file[j+i] = chunk[j];
+                file[j + i] = chunk[j];
             }
         }
 
-//        if()
-//        String storageLocation = storagePath + destinationPath + "/";
-//        Path path = Paths.get(storageLocation);
-//        Files.createDirectories(path);
-
-        System.out.println("Output file path: " + outputPath);
+        // Try to deal with downloading issues
+        int i;
+        for(i = file.length - 1; i >= 0 && file[i] == 0; i --){}
+        if(i != file.length - 1){
+            file = Arrays.copyOfRange(file, 0 , i + 1);
+        }
 
         String userDirectory = System.getProperty("user.dir");
-        FileManager.writeToDisk(userDirectory+outputPath+filename, file);
+        String storageLocation = userDirectory  + outputPath + "/";
+        Path path = Paths.get(storageLocation);
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Output file path: " + storageLocation);
+        FileManager.writeToDisk(storageLocation+filename, file);
     }
 
     @Override

@@ -112,6 +112,10 @@ public class Client implements Node{
 
         System.out.println("File length: " + file.length);
         int i = 0;
+
+        System.out.println("SequenceNumber: " + sequenceNumber);
+        System.out.println("TransferredSize: " + transferredSize);
+
         while(i < chunk.length && (i + (sequenceNumber * 64 * Constants.KB)) < file.length){
             chunk[i] = file[(i + (sequenceNumber * 64 * Constants.KB))];
             i++;
@@ -120,13 +124,13 @@ public class Client implements Node{
         if(i != chunk.length){
             while(i < chunk.length){
                 chunk[i] = 0;
+                System.out.println("Padding Chunk");
                 i++;
                 transferredSize++;
             }
         }
         // Infinite loop
 
-        System.out.println("Sending chunk: " + sequenceNumber);
         try {
             chunkservers[0].sendMessage(new FileTransfer(chunkservers, chunk, sequenceNumber, uploadResponse.getDest(), filename).getBytes());
 
