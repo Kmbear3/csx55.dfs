@@ -10,14 +10,8 @@ import csx55.dfs.node.Node;
 import csx55.dfs.transport.TCPReceiverThread;
 import csx55.dfs.transport.TCPSender;
 import csx55.dfs.transport.TCPServerThread;
-import csx55.dfs.util.CLIHandler;
-import csx55.dfs.util.Constants;
-import csx55.dfs.util.HeartBeatThread;
-import csx55.dfs.util.IpPort;
-import csx55.dfs.wireformats.Event;
-import csx55.dfs.wireformats.FileTransfer;
-import csx55.dfs.wireformats.Protocol;
-import csx55.dfs.wireformats.UploadResponse;
+import csx55.dfs.util.*;
+import csx55.dfs.wireformats.*;
 
 
 public class ChunkServer implements Node{
@@ -82,6 +76,9 @@ public class ChunkServer implements Node{
                 case Protocol.FILE_TRANSFER:
                     handleChunkUpload(new FileTransfer(event.getBytes()));
                     break;
+                case Protocol.CHUNK_REQUEST:
+                    handleChunkRequest(new ChunkRequest(event.getBytes()));
+                    break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + event.getType());
             }
@@ -89,6 +86,17 @@ public class ChunkServer implements Node{
             System.err.println("Error: MessagingNode.onEvent()");
             e.printStackTrace();
         }
+    }
+
+    synchronized private void handleChunkRequest(ChunkRequest chunkRequest) throws IOException {
+        System.out.println(chunkRequest.getClusterLocationFileName());
+        byte[] chunk = FileManager.readFromDisk(chunkRequest.getClusterLocationFileName() + "_chunk" + chunkRequest.getSequnce());
+        FileChunk fileChunk = new FileChunk(chunk, chunkRequest.getSequnce());
+
+        IpPort client = chunkRequest.getClientInfo();
+        client.sendMessage(fileChunk.getBytes());
+
+        System.out.println("Sending chunk... " + chunkRequest.getClusterLocationFileName() + "_chunk" + chunkRequest.getSequnce());
     }
 
     synchronized private void handleChunkUpload(FileTransfer ft) throws IOException{

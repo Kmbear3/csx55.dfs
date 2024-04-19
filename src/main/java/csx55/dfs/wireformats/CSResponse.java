@@ -9,10 +9,12 @@ public class CSResponse implements Event{
 
     IpPort CS;
     int sequence;
+    boolean EOF;
 
-    public CSResponse(IpPort cs, int sequence){
+    public CSResponse(IpPort cs, int sequence, boolean EOF){
         this.CS = cs;
         this.sequence = sequence;
+        this.EOF = EOF;
     }
 
     public CSResponse(byte[] marshalledBytes) throws IOException {
@@ -25,6 +27,7 @@ public class CSResponse implements Event{
         }
         this.sequence = din.readInt();
         this.CS = new IpPort(din);
+        this.EOF = din.readBoolean();
 
         baInputStream.close();
         din.close();
@@ -46,6 +49,7 @@ public class CSResponse implements Event{
 
         dout.writeInt(this.sequence);
         CS.marshall(dout);
+        dout.writeBoolean(this.EOF);
 
         dout.flush();
         marshalledBytes = baOutputStream.toByteArray();
@@ -61,6 +65,10 @@ public class CSResponse implements Event{
 
     public int getSequence() {
         return sequence;
+    }
+
+    public boolean EOF(){
+        return this.EOF;
     }
 }
 

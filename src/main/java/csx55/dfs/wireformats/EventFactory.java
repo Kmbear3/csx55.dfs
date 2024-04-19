@@ -21,6 +21,14 @@ public class EventFactory {
                     return new UploadResponse(marshalledBytes);
                 case Protocol.FILE_TRANSFER:
                     return new FileTransfer(marshalledBytes);
+                case Protocol.CS_REQUEST:
+                    return new CSRequest(marshalledBytes);
+                case Protocol.CS_RESPONSE:
+                    return new CSResponse(marshalledBytes);
+                case Protocol.FILE_CHUNK:
+                    return new FileChunk(marshalledBytes);
+                case Protocol.CHUNK_REQUEST:
+                    return new ChunkRequest(marshalledBytes);
                 default:
                     System.err.println("Didn't have an event! " + messageType);
                     return null;

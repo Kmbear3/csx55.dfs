@@ -25,8 +25,8 @@ public class Client implements Node{
     long transferredSize = 0;
 
     // Downloading Variables:
-    String downloadDestination = "";
     Downloader downloader;
+    IpPort me;
 
     public Client(String controllerIp, int port){
         try {
@@ -37,6 +37,11 @@ public class Client implements Node{
             registryReceiverThread.start();
 
             configureServer(this);
+
+            String ip = this.server.getIP();
+            int myPort = this.server.getPort();
+            this.me = new IpPort(ip, myPort);
+
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -55,10 +60,11 @@ public class Client implements Node{
                 case Protocol.UPLOAD_RESPONSE:
                     handleUploadResponse(new UploadResponse(event.getBytes()));
                     break;
-                case Protocol.DOWNLOAD_RESPONSE:
-                    downloader.handleDownloadResponse(new DownloadResponse(event.getBytes()));
+                case Protocol.CS_RESPONSE:
+                    downloader.receiveCSResponse(new CSResponse(event.getBytes()));
                     break;
                 case Protocol.FILE_CHUNK:
+                    System.out.println("Receiving File chunk");
                     downloader.receiveChunk(new FileChunk(event.getBytes()));
                     break;
                 default:
@@ -134,24 +140,8 @@ public class Client implements Node{
         sequenceNumber++;
     }
 
-//    public void downloadFile(String source, String destination) {
-//        try {
-//            this.downloadDestination = destination;
-//            DownloadRequest request = new DownloadRequest(source, 0);
-//            controllerSender.sendData(request.getBytes());
-//        }catch (IOException e){
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void handleDownloadResponse(DownloadResponse downloadResponse) {
-//        downloader = new Downloader(downloadResponse.getNumberOfChunks(), this.downloadDestination);
-//        Thread downloadThread = new Thread(downloader);
-//        downloadThread.start();
-//    }
-
     public void downloadFile(String source, String destination) {
-        downloader = new Downloader(controllerSender, source, destination);
+        downloader = new Downloader(me, controllerSender, source, destination);
         Thread downloadThread = new Thread(downloader);
         downloadThread.start();
     }

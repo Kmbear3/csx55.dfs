@@ -18,11 +18,6 @@ public class Controller implements Node {
     private final int port;
     private ConcurrentHashMap<String, CSProxy> csProxies = new ConcurrentHashMap<>();
 
-    // knows where the chunks are in the system
-    // This information is built from heartbeats
-    // Checks the liveness of the server
-        // When it doesn't receive heartbeats
-
     public Controller(int port){
         System.out.println("Creating Controller, Listening for Connections. Port: " + port);
         this.port = port;
@@ -47,10 +42,8 @@ public class Controller implements Node {
                 case Protocol.UPLOAD_REQUEST:
                     handleUploadRequest(new UploadRequest(event.getBytes()), socket);
                     break;
-                case Protocol.DOWNLOAD_REQUEST:
-                    handleDownloadRequest(new DownloadRequest(event.getBytes()));
                 case Protocol.CS_REQUEST:
-                    receiveChunkServerRequest(new CSRequest(event.getBytes()));
+                    receiveChunkServerRequest(new CSRequest(event.getBytes()), socket);
                     break;
                 default:
                     System.out.println("Protocol Unmatched! " + event.getType());
@@ -61,15 +54,23 @@ public class Controller implements Node {
         }
     }
 
-    private void receiveChunkServerRequest(CSRequest csRequest) {
+    private void receiveChunkServerRequest(CSRequest csRequest, Socket socket) throws  IOException {
         // this locates the chunk with the included sequence number
-        // the sends the sequence numebr wiht the IpPort back the client 
-    }
+        // the sends the sequence numebr wiht the IpPort back the client
+        int sequenceNumber = csRequest.getSequence();
+        String clusterLocationFileName = csRequest.getClusterLocationFileName();
+        CSResponse csResponse = new  CSResponse(new IpPort("noIP", 0), sequenceNumber, true);;
+        System.out.println("file: " + clusterLocationFileName + " \n Sequence Number: " + sequenceNumber);
 
-    synchronized private void handleDownloadRequest(DownloadRequest downloadRequest) {
-        // Needs to locate all the chunks needed for the complete file
-        // Adn send itn back to the requesting client
-
+        for(CSProxy csProxy : csProxies.values()){
+            for(Chunk chunk : csProxy.chunks){
+                if(chunk.getName().equals(clusterLocationFileName + "_chunk" + sequenceNumber)){
+                    csResponse = new CSResponse(csProxy.getIpPort(), sequenceNumber, false);
+                }
+            }
+        }
+        TCPSender sender = new TCPSender(socket);
+        sender.sendData(csResponse.getBytes());
     }
 
     private void handleHeartBeat(HeartBeat beat) {

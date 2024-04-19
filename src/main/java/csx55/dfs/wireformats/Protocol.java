@@ -10,4 +10,6 @@ public class Protocol {
     public static final int FILE_CHUNK = 7;
     public static final int CS_REQUEST = 8;
     public static final int CS_RESPONSE = 9;
+    public static final int CHUNK_REQUEST = 10;
+
 }

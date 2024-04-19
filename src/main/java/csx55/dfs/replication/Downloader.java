@@ -3,46 +3,43 @@ package csx55.dfs.replication;
 import csx55.dfs.transport.TCPSender;
 import csx55.dfs.util.Constants;
 import csx55.dfs.util.FileManager;
-import csx55.dfs.wireformats.CSRequest;
-import csx55.dfs.wireformats.DownloadRequest;
-import csx55.dfs.wireformats.DownloadResponse;
-import csx55.dfs.wireformats.FileChunk;
+import csx55.dfs.util.IpPort;
+import csx55.dfs.wireformats.*;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class Downloader implements Runnable {
 
-    int numberOfChunks;
-    volatile int receivedChunks;
     HashMap<Integer, byte[]> unassembledFile;
     String outputPath;
     String clusterFileLocation;
     TCPSender controllerSender;
+    int receivedChunks;
+    IpPort myInfo;
+    String filename;
 
-    public Downloader(TCPSender controllerSender, String source, String outputPath){
+    public Downloader(IpPort myInfo, TCPSender controllerSender, String source, String outputPath){
         unassembledFile = new HashMap<>();
         this.outputPath = outputPath;
-        this.receivedChunks = 0;
         this.clusterFileLocation = source;
         this.controllerSender = controllerSender;
-        DownloadRequest request = new DownloadRequest(source, 0);
+        this.receivedChunks = 0;
+        this.myInfo = myInfo;
 
-        try {
-            controllerSender.sendData(request.getBytes());
+        String[] files = source.split("/");
+        this.filename = files[files.length -1];
 
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+        sendCSRequest(clusterFileLocation, receivedChunks);
     }
 
     public void receiveChunk(FileChunk fileChunk) {
         unassembledFile.put(fileChunk.getSequnce(), fileChunk.getChunk());
         receivedChunks++;
-    }
-
-    public void handleDownloadResponse(DownloadResponse downloadResponse) {
-        this.numberOfChunks = downloadResponse.getNumberOfChunks();
+        System.out.println("Received Chunk... " + receivedChunks);
         sendCSRequest(clusterFileLocation, receivedChunks);
     }
 
@@ -55,23 +52,44 @@ public class Downloader implements Runnable {
         }
     }
 
-
-    @Override
-    public void run() {
-        while(numberOfChunks > receivedChunks){
-
+    public void receiveCSResponse(CSResponse csResponse){
+        if(csResponse.EOF() != true) {
+            IpPort CS = csResponse.getCS();
+            try {
+                CS.sendMessage(new ChunkRequest(myInfo, clusterFileLocation, receivedChunks).getBytes());
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }else{
+            downloadFile();
         }
+    }
 
-        byte[] file = new byte[numberOfChunks * 64 * Constants.KB];
+    private void downloadFile(){
+        byte[] file = new byte[receivedChunks * 64 * Constants.KB];
 
-        for(int i = 0; i < numberOfChunks; i++){
+        for(int i = 0; i < receivedChunks; i++){
             byte[] chunk = unassembledFile.get(i);
             for(int j = 0; j < chunk.length; j++){
                 file[j+i] = chunk[j];
             }
         }
 
+//        if()
+//        String storageLocation = storagePath + destinationPath + "/";
+//        Path path = Paths.get(storageLocation);
+//        Files.createDirectories(path);
+
+        System.out.println("Output file path: " + outputPath);
+
         String userDirectory = System.getProperty("user.dir");
-        FileManager.writeToDisk(userDirectory+outputPath, file);
+        FileManager.writeToDisk(userDirectory+outputPath+filename, file);
+    }
+
+    @Override
+    public void run() {
+        while(true){
+
+        }
     }
 }

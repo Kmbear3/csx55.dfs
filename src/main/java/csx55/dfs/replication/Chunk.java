@@ -43,6 +43,7 @@ public class Chunk {
         }
         System.out.println("Storing file: " + outputPath);
         FileManager.writeToDisk(outputPath, data);
+        this.filename = outputPath;
     }
 
     // Metadata chunk
@@ -101,6 +102,8 @@ public class Chunk {
     }
 
     public String getFilename(){
-        return filename.split("_")[0];
+        // Just the file name
+        int index = filename.lastIndexOf("_");
+        return filename.substring(0, index);
     }
 }
