@@ -3,6 +3,9 @@ package csx55.dfs.replication;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -133,6 +136,8 @@ public class Client implements Node{
 
         try {
             chunkservers[0].sendMessage(new FileTransfer(chunkservers, chunk, sequenceNumber, uploadResponse.getDest(), filename).getBytes());
+            String userDirectory = System.getProperty("user.dir");
+            FileManager.writeToDisk(userDirectory+filename+"_chunk" +sequenceNumber, chunk);
 
             // There is still data needing to be transmitted, request new chunkServers
             if(!(transferredSize >= file.length)){

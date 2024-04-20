@@ -71,8 +71,9 @@ public class Downloader implements Runnable {
 
         for(int i = 0; i < receivedChunks; i++){
             byte[] chunk = unassembledFile.get(i);
+            System.out.println("Downloading chunk size: " + chunk.length);
             for(int j = 0; j < chunk.length; j++){
-                file[j + i] = chunk[j];
+                file[j + (i * 64 * Constants.KB)] = chunk[j];
             }
         }
 
