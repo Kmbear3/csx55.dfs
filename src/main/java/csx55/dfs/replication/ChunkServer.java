@@ -90,13 +90,20 @@ public class ChunkServer implements Node{
 
     synchronized private void handleChunkRequest(ChunkRequest chunkRequest) throws IOException {
         System.out.println(chunkRequest.getClusterLocationFileName());
-        byte[] chunk = FileManager.readFromDisk(chunkRequest.getClusterLocationFileName() + "_chunk" + chunkRequest.getSequnce());
-        FileChunk fileChunk = new FileChunk(chunk, chunkRequest.getSequnce());
+        String fullChunkName = chunkRequest.getClusterLocationFileName() + "_chunk" + chunkRequest.getSequnce();
 
-        IpPort client = chunkRequest.getClientInfo();
-        client.sendMessage(fileChunk.getBytes());
+        byte[] chunkBytes = FileManager.readFromDisk(fullChunkName);
 
-        System.out.println("Sending chunk... " + chunkRequest.getClusterLocationFileName() + "_chunk" + chunkRequest.getSequnce());
+        // inside Chunk.correctChecksum read error location information will be printed.
+        Chunk chunkObject = chunks.get(fullChunkName);
+
+        if(chunkObject.correctChecksum(fullChunkName, chunkBytes)) {
+            FileChunk fileChunk = new FileChunk(chunkBytes, chunkRequest.getSequnce());
+            IpPort client = chunkRequest.getClientInfo();
+            client.sendMessage(fileChunk.getBytes());
+
+            System.out.println("Sending chunk... " + chunkRequest.getClusterLocationFileName() + "_chunk" + chunkRequest.getSequnce());
+        }
     }
 
     synchronized private void handleChunkUpload(FileTransfer ft) throws IOException{
