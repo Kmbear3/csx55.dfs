@@ -67,7 +67,7 @@ public class Client implements Node{
                     downloader.receiveCSResponse(new CSResponse(event.getBytes()));
                     break;
                 case Protocol.FILE_CHUNK:
-                    System.out.println("Receiving File chunk");
+//                    System.out.println("Receiving File chunk");
                     downloader.receiveChunk(new FileChunk(event.getBytes()));
                     break;
                 default:
@@ -113,11 +113,11 @@ public class Client implements Node{
 
         // Le jank -- NOTICE -- if file values are broken, check here!!!!!
 
-        System.out.println("File length: " + file.length);
+//        System.out.println("File length: " + file.length);
         int i = 0;
 
-        System.out.println("SequenceNumber: " + sequenceNumber);
-        System.out.println("TransferredSize: " + transferredSize);
+//        System.out.println("SequenceNumber: " + sequenceNumber);
+//        System.out.println("TransferredSize: " + transferredSize);
 
         while(i < chunk.length && (i + (sequenceNumber * 64 * Constants.KB)) < file.length){
             chunk[i] = file[(i + (sequenceNumber * 64 * Constants.KB))];
@@ -127,7 +127,7 @@ public class Client implements Node{
         if(i != chunk.length){
             while(i < chunk.length){
                 chunk[i] = 0;
-                System.out.println("Padding Chunk");
+//                System.out.println("Padding Chunk");
                 i++;
                 transferredSize++;
             }
@@ -136,8 +136,8 @@ public class Client implements Node{
 
         try {
             chunkservers[0].sendMessage(new FileTransfer(chunkservers, chunk, sequenceNumber, uploadResponse.getDest(), filename).getBytes());
-            String userDirectory = System.getProperty("user.dir");
-            FileManager.writeToDisk(userDirectory+filename+"_chunk" +sequenceNumber, chunk);
+//            String userDirectory = System.getProperty("user.dir");
+//            FileManager.writeToDisk(userDirectory+filename+"_chunk" +sequenceNumber, chunk);
 
             // There is still data needing to be transmitted, request new chunkServers
             if(!(transferredSize >= file.length)){

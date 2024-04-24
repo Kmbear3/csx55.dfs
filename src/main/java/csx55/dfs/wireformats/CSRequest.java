@@ -18,7 +18,6 @@ public class CSRequest implements Event{
         DataInputStream din = new DataInputStream(new BufferedInputStream(baInputStream));
 
         int type = din.readInt();
-        System.out.println("Type: " + type);
         if(type != MESSAGE_TYPE){
             System.err.println("type mismatch in CSRequest");
         }

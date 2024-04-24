@@ -40,7 +40,7 @@ public class Downloader implements Runnable {
     public void receiveChunk(FileChunk fileChunk) {
         unassembledFile.put(fileChunk.getSequnce(), fileChunk.getChunk());
         receivedChunks++;
-        System.out.println("Received Chunk... " + receivedChunks);
+//        System.out.println("Received Chunk... " + receivedChunks);
         sendCSRequest(clusterFileLocation, receivedChunks);
     }
 
@@ -71,7 +71,7 @@ public class Downloader implements Runnable {
 
         for(int i = 0; i < receivedChunks; i++){
             byte[] chunk = unassembledFile.get(i);
-            System.out.println("Downloading chunk size: " + chunk.length);
+//            System.out.println("Downloading chunk size: " + chunk.length);
             for(int j = 0; j < chunk.length; j++){
                 file[j + (i * 64 * Constants.KB)] = chunk[j];
             }

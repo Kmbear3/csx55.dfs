@@ -119,7 +119,7 @@ public class Chunk {
                     slice[j] = chunkBytes[i + j];
                 }
 
-                System.out.println("Comparing Chunks!");
+//                System.out.println("Comparing Chunks!");
                 String readChunkChecksum = new String(md.digest(slice));
                 if(!checksums.get(arrayIndex).equals(readChunkChecksum)){
                     System.out.println("\n\n---------------------------------------------------------------------------------------- \n\n");

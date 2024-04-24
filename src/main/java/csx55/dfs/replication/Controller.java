@@ -37,7 +37,7 @@ public class Controller implements Node {
                 case Protocol.HEART_BEAT:
                     HeartBeat beat = new HeartBeat(event.getBytes());
                     handleHeartBeat(beat);
-                    System.out.println("Received beat");
+//                    System.out.println("Received beat");
                     break;
                 case Protocol.UPLOAD_REQUEST:
                     handleUploadRequest(new UploadRequest(event.getBytes()), socket);
@@ -60,7 +60,7 @@ public class Controller implements Node {
         int sequenceNumber = csRequest.getSequence();
         String clusterLocationFileName = csRequest.getClusterLocationFileName();
         CSResponse csResponse = new  CSResponse(new IpPort("noIP", 0), sequenceNumber, true);;
-        System.out.println("file: " + clusterLocationFileName + " \n Sequence Number: " + sequenceNumber);
+//        System.out.println("file: " + clusterLocationFileName + " \n Sequence Number: " + sequenceNumber);
 
         for(CSProxy csProxy : csProxies.values()){
             for(Chunk chunk : csProxy.chunks){
