@@ -1,5 +1,5 @@
-# CS555-Overlay
-
+# README
+This project is an implementation of GFS. This project uses fault tolerance by leveraging file chunk replication. The correctness of the chunks is ensured by utilizing checksums created by the SHA-1 message digest algorithm. Reads / Writes are done via interactions with the system entrypoint: the ChunkServer.  
 
 * execute all commands under csx55.overlay/
 
